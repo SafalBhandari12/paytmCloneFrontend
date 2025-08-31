@@ -1,10 +1,15 @@
+import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import { API_URL } from "../../config";
+import { useState } from "react";
 
 export const SendMoney = () => {
   const [searchParam] = useSearchParams();
   const id = searchParam.get("id");
   const firstName = searchParam.get("firstName");
   console.log(id, firstName);
+  const [amount, setAmount] = useState(0);
+  const token = localStorage.getItem("token");
   return (
     <div class='flex justify-center h-screen bg-gray-100'>
       <div className='h-full flex flex-col justify-center'>
@@ -32,10 +37,30 @@ export const SendMoney = () => {
                   class='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                   id='amount'
                   placeholder='Enter amount'
+                  onChange={(e) => setAmount(e.target.value)}
                 />
               </div>
               <button
-                onClick={() => {}}
+                onClick={async () => {
+                  console.log(`${API_URL}/account/transfer`);
+                  try {
+                    const data = await axios.post(
+                      `${API_URL}/account/transfer`,
+                      {
+                        to: id,
+                        amount: amount,
+                      },
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
+                    );
+                    console.log(data);
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }}
                 class='justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white'
               >
                 Initiate Transfer
